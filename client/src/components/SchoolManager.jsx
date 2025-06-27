@@ -4,9 +4,17 @@ import { Container } from 'react-bootstrap';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import API from '../api/API.mjs';
-import HomePage from '../pages/Home';  
+
+import HomePage from '../pages/Home';
 import TeacherPage from '../pages/TeacherPage';
 import StudentPage from '../pages/StudentPage';
+import NuovoCompito from '../pages/Teacher/NuovoCompito';
+import CompitiAssegnati from '../pages/Student/CompitiAssegnati';
+import ValutaCompito from '../pages/Teacher/ValutaCompito';
+import StatoClasse from '../pages/Teacher/StatoClasse';
+import PunteggiStudent from '../pages/Student/PunteggiStudent';
+import TeacherHome from '../pages/Teacher/TeacherHome';
+import StudentHome from '../pages/Student/StudentHome';
 
 function SchoolManager() {
   const [user, setUser] = useState(undefined);
@@ -14,46 +22,51 @@ function SchoolManager() {
   const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
 
+  // Verifica autenticazione al caricamento
   useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      const u = await API.getUserInfo();
-      setUser(u);
-      setIsLoaded(true);
+    const checkAuth = async () => {
+      try {
+        const u = await API.getUserInfo();
+        setUser(u);
+        setIsLoaded(true);
 
-      // Redirect in base al ruolo
-      if (u.role === 'teacher') {
-        navigate('/teacher');
-      } else if (u.role === 'student') {
-        navigate('/student');
-      } else {
+        switch (u.role) {
+          case 'teacher':
+            navigate('/teacher');
+            break;
+          case 'student':
+            navigate('/student');
+            break;
+          default:
+            navigate('/home');
+        }
+      } catch {
+        setUser(undefined);
+        setIsLoaded(true);
         navigate('/home');
       }
+    };
 
-    } catch {
-      setUser(undefined);
-      setIsLoaded(true);
-      navigate('/home'); // fallback se non loggato
-    }
-  };
-
-  checkAuth();
-}, []);
-
+    checkAuth();
+  }, []);
 
   const doLogin = (username, password) => {
     API.login(username, password)
       .then((u) => {
-       setUser(u);
-       setIsLoaded(true);
+        setUser(u);
+        setIsLoaded(true);
 
-      if (u.role === 'teacher')
-        navigate('/teacher');
-      else if (u.role === 'student')
-        navigate('/student');
-      else
-        navigate('/home');  // fallback
-})
+        switch (u.role) {
+          case 'teacher':
+            navigate('/teacher');
+            break;
+          case 'student':
+            navigate('/student');
+            break;
+          default:
+            navigate('/home');
+        }
+      })
       .catch((err) => {
         const msg = err?.error || err?.message || 'Errore durante il login';
         setLoginMessage(msg);
@@ -63,11 +76,9 @@ function SchoolManager() {
   const doLogout = async () => {
     await API.logOut();
     setUser(undefined);
-    setIsLoaded(false);
-    navigate('/');
+    navigate('/home');
   };
 
-  // Blocca il render finché il check iniziale non è completato
   if (!isLoaded) {
     return (
       <Container className="text-center mt-5">
@@ -79,28 +90,50 @@ function SchoolManager() {
   return (
     <Container fluid style={{ padding: 0, height: '100%' }}>
       <Routes>
-        {/* redirect iniziale */}
         <Route path="/" element={<Navigate to="/home" />} />
 
-        {/* homepage pubblica + login integrato */}
-        <Route path="/home" element={
-          <HomePage
-            user={user}
-            onLogin={doLogin}
-            onLogout={doLogout}
-            message={loginMessage}
-            clearMessage={setLoginMessage}
-          />
-        } />
-
-        {/* aree protette */}
-        <Route path="/teacher"
-          element={user?.role === 'teacher' ? <TeacherPage /> : <Navigate to="/home" />}
+        {/* Home Page */}
+        <Route
+          path="/home"
+          element={
+            <HomePage
+              user={user}
+              onLogin={doLogin}
+              onLogout={doLogout}
+              message={loginMessage}
+              clearMessage={setLoginMessage}
+            />
+          }
         />
 
-        <Route path="/student"
-          element={user?.role === 'student' ? <StudentPage /> : <Navigate to="/home" />}
-        />
+        {/* Area Docente */}
+        <Route
+          path="/teacher"
+          element={
+            user?.role === 'teacher'
+              ? <TeacherPage user={user} onLogout={doLogout} />
+              : <Navigate to="/home" />
+          }
+        >
+          <Route index element={<TeacherHome user={user} />} />
+          <Route path="nuovo-compito" element={<NuovoCompito user={user} onLogout={doLogout} />} />
+          <Route path="valuta-compiti" element={<ValutaCompito user={user} onLogout={doLogout} />} />
+          <Route path="stato-classe" element={<StatoClasse user={user} onLogout={doLogout} />} />
+        </Route>
+
+        {/* Area Studente */}
+        <Route
+          path="/student"
+          element={
+            user?.role === 'student'
+              ? <StudentPage user={user} onLogout={doLogout} />
+              : <Navigate to="/home" />
+          }
+        >
+          <Route index element={<StudentHome user={user} onLogout={doLogout} />} />
+          <Route path="compiti" element={<CompitiAssegnati user={user} onLogout={doLogout} />} />
+          <Route path="punteggi" element={<PunteggiStudent user={user} onLogout={doLogout} />} />
+        </Route>
       </Routes>
     </Container>
   );

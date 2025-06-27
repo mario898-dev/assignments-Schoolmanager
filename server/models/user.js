@@ -1,10 +1,9 @@
 // models/user.js
 export class User {
-  constructor(id, email, name, surname, role) {
+  constructor(id, email, name, role) {
     this.id = id;
     this.email = email;
     this.name = name;
-    this.surname = surname;
     this.role = role;
   }
 }

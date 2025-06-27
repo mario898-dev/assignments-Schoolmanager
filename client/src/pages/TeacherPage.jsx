@@ -1,8 +1,13 @@
-function TeacherPage() {
+import { Outlet } from 'react-router-dom';
+import AppNavbar from '../components/AppNavbar';
 
-    return (
-        <h1> Pagina del Docente </h1>
-    )
+function TeacherPage({ user, onLogout }) {
+  return (
+    <>
+      <AppNavbar user={user} onLogout={onLogout} />
+      <Outlet />
+    </>
+  );
 }
 
-export default TeacherPage
+export default TeacherPage;

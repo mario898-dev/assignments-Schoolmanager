@@ -1,4 +1,3 @@
-// middlewares/Authenticator.js
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
@@ -17,29 +16,22 @@ export class Authenticator {
 passport.use(new LocalStrategy(
   { usernameField: 'email', passwordField: 'password' },
   async (email, password, done) => {
-    console.log("🔐 Tentativo login per:", email); // 👈 log 1
 
     try {
       const authenticated = await self.dao.getIsUserAuthenticated(email, password);
-      console.log("✅ Password corretta?", authenticated); // 👈 log 2
 
       if (!authenticated) {
-        console.log("❌ Login fallito");
         return done(null, false, { message: 'Credenziali errate' });
       }
 
-      const user = await self.dao.getUserByUsername(email);
-      console.log("🎉 Utente trovato:", user); // 👈 log 3
+      const user = await self.dao.getUserByEmail(email);
 
       return done(null, user);
     } catch (err) {
-      console.error("💥 Errore autenticazione:", err);
       return done(err);
     }
   }
 ));
-
-
 
     passport.serializeUser((user, done) => {
       done(null, user.email);
@@ -47,7 +39,7 @@ passport.use(new LocalStrategy(
 
     passport.deserializeUser(async (email, done) => {
       try {
-        const user = await this.dao.getUserByUsername(email);
+        const user = await this.dao.getUserByEmail(email);
         done(null, user);
       } catch (err) {
         done(err);
@@ -86,9 +78,11 @@ passport.use(new LocalStrategy(
   }
 
   isStudent(req, res, next) {
-    if (req.isAuthenticated() && Utility.isStudent(req.user)) return next();
-    return res.status(403).json({ error: 'Accesso riservato agli studenti' });
-  }
+  console.log("🔐 Controllo accesso student - ruolo utente:", req.user?.role);
+  if (req.isAuthenticated() && Utility.isStudent(req.user)) return next();
+  return res.status(403).json({ error: 'Accesso riservato agli studenti' });
+}
+
 }
 
 export default passport;

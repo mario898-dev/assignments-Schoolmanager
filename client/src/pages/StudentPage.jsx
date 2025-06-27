@@ -1,8 +1,13 @@
-function StudentPage() {
+import { Outlet } from 'react-router-dom';
+import AppNavbar from '../components/AppNavbar';
 
-    return (
-        <h1> Pagina dello studente </h1>
-    )
+function StudentPage({ user, onLogout }) {
+  return (
+    <>
+      <AppNavbar user={user} onLogout={onLogout} />
+      <Outlet />
+    </>
+  );
 }
 
 export default StudentPage;

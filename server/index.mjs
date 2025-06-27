@@ -5,6 +5,8 @@ import session from 'express-session';
 
 import passport, { Authenticator } from './auth/Authenticator.js';
 import authRoutes from './routes/Auth.js';
+import teacherRouter from './routes/Teacher.js';
+import studentRouter from './routes/Student.js'
 
 const app = express();
 const port = 3001;
@@ -34,6 +36,8 @@ const auth = new Authenticator();
 
 // mount router
 app.use('/api', authRoutes(auth));  // passa auth nei router
+app.use('/api', teacherRouter(auth));
+app.use('/api', studentRouter(auth));
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

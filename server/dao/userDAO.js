@@ -30,16 +30,17 @@ export default class UserDAO {
   /**
    * Recupera l'oggetto utente per email
    */
-  getUserByUsername(email) {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT userID AS id, email, name, role FROM users WHERE email = ?';
-      db.get(sql, [email], (err, row) => {
-        if (err) return reject(err);
-        if (!row) return resolve(null);
+  getUserByEmail(email) {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT userID, email, name, role FROM users WHERE email = ?';
+    db.get(sql, [email], (err, row) => {
+      if (err) return reject(err);
+      if (!row) return resolve(null);
 
-        const user = new User(row.id, row.email, row.name, '', row.role);  // 👈 '' al posto del surname
-        resolve(user);
-      });
+      const user = new User(row.userID, row.email, row.name, row.role);
+      resolve(user);
     });
-  }
+  });
+}
+
 }
