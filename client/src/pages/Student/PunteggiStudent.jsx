@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Container, Table, Alert, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Badge, Alert } from 'react-bootstrap';
+import RefreshButton from '../../components/RefreshButton';
+import PageHeader from '../../components/PageHeader';
 import API from '../../api/API.mjs';
 
 function PunteggiStudent() {
@@ -7,53 +9,60 @@ function PunteggiStudent() {
   const [media, setMedia] = useState(null);
   const [errore, setErrore] = useState('');
 
-  useEffect(() => {
-    const fetchPunteggi = async () => {
-      try {
-        const { compiti, media } = await API.getPunteggiStudent();
-        setCompiti(compiti);
-        setMedia(media);
-      } catch (err) {
-        setErrore('Errore nel caricamento dei punteggi.');
-      }
-    };
+  const fetchPunteggi = async () => {
+    try {
+      const { compiti, media } = await API.getPunteggiStudent();
+      setCompiti(compiti);
+      setMedia(media);
+      setErrore('');
+    } catch (err) {
+      setErrore('Errore nel caricamento dei punteggi.');
+    }
+  };
 
+  useEffect(() => {
     fetchPunteggi();
   }, []);
 
   return (
-    <Container>
-      <h2 className="mb-4">Valutazioni Ricevute</h2>
+    <Container fluid className="p-4">
+      <PageHeader title="Valutazioni" icon="📈" />
+
       {errore && <Alert variant="danger">{errore}</Alert>}
 
-      {compiti.length > 0 ? (
-        <>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Domanda</th>
-                <th>Punteggio</th>
-              </tr>
-            </thead>
-            <tbody>
-              {compiti.map((c, idx) => (
-                <tr key={c.taskID}>
-                  <td>{idx + 1}</td>
-                  <td>{c.question}</td>
-                  <td>
-                    <Badge bg="success">{c.score}</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+      <div className="d-flex justify-content-end">
+        <RefreshButton onClick={fetchPunteggi} label="Aggiorna Punteggi" />
+      </div>
 
-          <h5 className="mt-4">Media dei punteggi: <Badge bg="info">{media?.toFixed(2)}</Badge></h5>
-        </>
-      ) : (
-        <p>Nessuna valutazione disponibile.</p>
-      )}
+      {/* Intestazione */}
+      <Row className="fw-bold border-bottom py-2">
+        <Col xs={1}>#</Col>
+        <Col xs={7}>Domanda</Col>
+        <Col xs={4}>Punteggio</Col>
+      </Row>
+
+      {/* Lista compiti */}
+      {compiti.map((compito, index) => (
+        <Row key={compito.taskID} className="align-items-center py-2 border-bottom">
+          <Col xs={1}>{index + 1}</Col>
+          <Col xs={7}>{compito.question}</Col>
+          <Col xs={4}>
+            <Badge bg="success">{compito.score}</Badge>
+          </Col>
+        </Row>
+      ))}
+
+      {/* Riga media finale */}
+      <Row className="fw-bold pt-3">
+        <Col xs={8} className="text-end">Media ponderata:</Col>
+        <Col xs={4}>
+          {media !== null ? (
+            <Badge bg="primary">{media.toFixed(2)}</Badge>
+          ) : (
+            <Badge bg="secondary">N/D</Badge>
+          )}
+        </Col>
+      </Row>
     </Container>
   );
 }

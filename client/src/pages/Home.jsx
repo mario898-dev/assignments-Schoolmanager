@@ -1,27 +1,43 @@
-import { Container } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from '../components/Login';
 
 export default function HomePage({ user, onLogin, message, clearMessage }) {
-  return (
-    <Container className="mt-5" style={{ maxWidth: '600px' }}>
-      
-      {/* --------- LOGIN FORM se non autenticato --------- */}
-      {!user && (
-        <div className="mb-5 border rounded p-4 bg-white shadow-sm">
-          <h3 className="mb-4 text-center">Accedi per continuare</h3>
-          <Login onLogin={onLogin} message={message} clearMessage={clearMessage} />
-        </div>
-      )}
+  if (user) return null;
 
-      {/* --------- BLOCCO INFORMATIVO (sempre visibile) --------- */}
-      <div className="border rounded p-4 bg-light">
-        <h5>SchoolManager tool</h5>
-        <p className="text-muted">
-          SchoolManager permette di gestire compiti, risposte e valutazioni a seconda del tuo ruolo. 
-          Dopo il login verrai indirizzato automaticamente alla tua area personale.
-        </p>
-      </div>
+  return (
+    <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
+      <Row className="w-100" style={{ maxWidth: '1100px' }}>
+        {/* Colonna sinistra - Box informativi */}
+        <Col md={6} className="d-flex flex-column justify-content-center gap-3">
+          <div className="bg-light p-4 rounded shadow-sm">
+            <h5 className="fw-bold">SchoolManager</h5>
+            <p className="text-muted mb-0">
+              SchoolManager permette di gestire compiti, risposte e valutazioni in base al tuo ruolo.
+              Dopo il login verrai indirizzato automaticamente alla tua area personale.
+            </p>
+          </div>
+
+          <div className="bg-light p-4 rounded shadow-sm">
+            <h5 className="fw-bold">Area Docente</h5>
+            <p className="text-muted mb-0">
+              Offre un'area docente personalizzata.
+            </p>
+          </div>
+
+          <div className="bg-light p-4 rounded shadow-sm">
+            <h5 className="fw-bold">Area Studente</h5>
+            <p className="text-muted mb-0">
+              Offre un'area studente personalizzata.
+            </p>
+          </div>
+        </Col>
+
+        {/* Colonna destra - Login */}
+        <Col md={6} className="d-flex justify-content-center align-items-center">
+          <Login onLogin={onLogin} message={message} clearMessage={clearMessage} />
+        </Col>
+      </Row>
     </Container>
   );
 }

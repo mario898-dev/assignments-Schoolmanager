@@ -1,9 +1,5 @@
 import db from '../db/openDB.js';
 
-/**
- * Restituisce tutti i compiti assegnati a uno studente,
- * con eventuale risposta (se già fornita).
- */
 export function getTasksForStudent(studentID) {
   return new Promise((resolve, reject) => {
     const sql = `
@@ -14,9 +10,8 @@ export function getTasksForStudent(studentID) {
         a.answer_text AS risposta
       FROM task_Members tm
       JOIN Tasks t ON t.taskID = tm.taskID
-      LEFT JOIN answers a 
-        ON a.taskID = tm.taskID
-      WHERE tm.studentID = ?
+      LEFT JOIN answers a ON a.taskID = tm.taskID
+      WHERE tm.studentID = ? AND t.status = 'open'
     `;
 
     db.all(sql, [studentID], (err, rows) => {
@@ -35,7 +30,6 @@ export function getTasksForStudent(studentID) {
     });
   });
 }
-
 
 /**
  * Salva o aggiorna la risposta di uno studente a un compito.
@@ -66,7 +60,7 @@ export function getTaskByID(taskID) {
         return reject(err);
       }
 
-      resolve(row); // può essere undefined se il task non esiste
+      resolve(row); 
     });
   });
 }
@@ -88,25 +82,39 @@ export function isStudentInTaskGroup(studentID, taskID) {
 export function getStudentGrades(studentID) {
   return new Promise((resolve, reject) => {
     const sql = `
-      SELECT t.taskID, t.question, t.score
+      SELECT 
+        t.taskID,
+        t.question,
+        t.score,
+        COUNT(tm2.studentID) AS groupSize
       FROM Tasks t
-      JOIN task_Members tm ON tm.taskID = t.taskID
-      WHERE tm.studentID = ? AND t.status = 'closed' AND t.score IS NOT NULL
+      JOIN task_Members tm1 ON tm1.taskID = t.taskID AND tm1.studentID = ?
+      JOIN task_Members tm2 ON tm2.taskID = t.taskID
+      WHERE t.status = 'closed' AND t.score IS NOT NULL
+      GROUP BY t.taskID
     `;
 
     db.all(sql, [studentID], (err, rows) => {
       if (err) return reject(err);
 
-      const media = rows.length
-        ? rows.reduce((acc, r) => acc + r.score, 0) / rows.length
-        : null;
+      let weightedSum = 0;
+      let totalWeight = 0;
+
+      for (const row of rows) {
+        const weight = 1 / row.groupSize;
+        weightedSum += row.score * weight;
+        totalWeight += weight;
+      }
+
+      const media = totalWeight > 0 ? weightedSum / totalWeight : null;
 
       resolve({
-        compiti: rows,   // Array di { taskID, question, score }
-        media: media,
+        compiti: rows.map(r => ({ taskID: r.taskID, question: r.question, score: r.score })),
+        media
       });
     });
   });
 }
+
 
 

@@ -1,6 +1,5 @@
 import db from '../db/openDB.js';
 
-
 export function getAllStudents() {
   return new Promise((resolve, reject) => {
     const sql = `SELECT userID, name, email FROM users WHERE role = 'student'`;
@@ -126,7 +125,6 @@ export function valutaCompito(taskID, teacherID, score) {
 
 export function getClassSummary(teacherID) {
   return new Promise((resolve, reject) => {
-    console.log("📊 Eseguo getClassStats per teacherID:", teacherID);
 
     const sql = `
       SELECT u.userID AS id,
@@ -144,7 +142,6 @@ export function getClassSummary(teacherID) {
     db.all(sql, [teacherID], (err, rows) => {
       if (err) {
         console.error('Errore query semplificata:', err);
-          console.error("❌ Errore SQL in getClassStats:", err);
 
         reject(err);
       } else {

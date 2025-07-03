@@ -1,45 +1,56 @@
 import { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Form, Button, Card } from 'react-bootstrap';
 
-function Login({ onLogin, message, clearMessage }) {
-  const [email, setUsername] = useState('');
+function Login({ onLogin }) {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
     onLogin(email, password);
   };
 
   return (
-    <>
-      <h2 className="mb-4 text-center">Login</h2>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <Card style={{ width: '100%', maxWidth: '400px', padding: '2rem', borderRadius: '1rem' }}>
+        <div className="text-center mb-4">
+          <div style={{ fontSize: '2rem' }}>🔒</div>
+          <h3 className="fw-bold mt-2">Accesso alla piattaforma</h3>
+          <p className="text-muted small">Inserisci le tue credenziali per continuare</p>
+        </div>
 
-      {message && (
-        <Alert variant="danger" dismissible onClose={() => clearMessage('')}>
-          {message}
-        </Alert>
-      )}
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Email</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="nome@exam.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
 
-      <Form onSubmit={handleSubmit}>
-        <Form.Control
-          className="mb-3"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <Form.Control
-          className="mb-3"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button variant="primary" type="submit" className="w-100">
-          Login
-        </Button>
-      </Form>
-    </>
+          <Form.Group className="mb-4">
+            <Form.Label className="fw-semibold">Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Button type="submit" className="w-100 fw-semibold" variant="primary">
+            Accedi
+          </Button>
+        </Form>
+      </Card>
+    </div>
   );
 }
 
 export default Login;
+
+

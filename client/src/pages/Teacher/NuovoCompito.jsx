@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/API.mjs';
-import { Form, Button, Alert, Row, Col, ListGroup, Badge } from 'react-bootstrap';
+import { Form, Button, Alert, Row, Col, ListGroup, Badge, Container } from 'react-bootstrap';
+import PageHeader from '../../components/PageHeader';
 
 function NuovoCompito({ user, onLogout }) {
   const [domanda, setDomanda] = useState('');
@@ -21,6 +22,14 @@ function NuovoCompito({ user, onLogout }) {
     };
     fetchStudenti();
   }, []);
+
+  useEffect(() => {
+  if (errore) {
+    const timer = setTimeout(() => setErrore(''), 3000);
+    return () => clearTimeout(timer);
+  }
+}, [errore]);
+
 
   const toggleSelezione = (id) => {
     setStudentiSelezionati(prev =>
@@ -56,10 +65,10 @@ function NuovoCompito({ user, onLogout }) {
   };
 
   return (
-    <>
-
+  <Container fluid className="p-4">
+     
+        <PageHeader title="Crea Nuovo Compito" icon="📘" />
       <div className="p-4">
-        <h2 className="mb-4">Crea Nuovo Compito</h2>
         <Row>
           <Col md={6}>
             <Form onSubmit={handleSubmit}>
@@ -80,14 +89,14 @@ function NuovoCompito({ user, onLogout }) {
                   {studentiSelezionati.map(id => {
                     const stud = studenti.find(s => s.id === id);
                     return (
-                      <Badge bg="primary" pill className="me-1" key={id}>
+                      <Badge bg="secondary" pill className="me-1" key={id}>
                         {stud?.name}
                       </Badge>
                     );
                   })}
                 </div>
               </Form.Group>
-
+          
               {errore && <Alert variant="danger">{errore}</Alert>}
               {successo && <Alert variant="success">{successo}</Alert>}
 
@@ -115,7 +124,8 @@ function NuovoCompito({ user, onLogout }) {
           </Col>
         </Row>
       </div>
-    </>
+      </Container>
+   
   );
 }
 

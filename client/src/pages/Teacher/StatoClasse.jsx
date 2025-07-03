@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react';
 import API from '../../api/API.mjs';
 import { Table, Container, Alert, Form } from 'react-bootstrap';
+import RefreshButton from '../../components/RefreshButton';
+import PageHeader from '../../components/PageHeader';
 
 function StatoClasse() {
   const [studenti, setStudenti] = useState([]);
   const [errore, setErrore] = useState('');
   const [ordinamento, setOrdinamento] = useState('nome');
 
+  const fetchStats = async () => {
+    try {
+      const res = await API.getStatoClasse();
+      setStudenti(res);
+      setErrore('');
+    } catch (err) {
+      setErrore('Errore nel caricamento dello stato della classe.');
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await API.getStatoClasse();
-        setStudenti(res);
-      } catch (err) {
-        setErrore('Errore nel caricamento dello stato della classe.');
-      }
-    };
     fetchStats();
   }, []);
 
@@ -27,8 +31,12 @@ function StatoClasse() {
   });
 
   return (
-    <Container>
-      <h2 className="mb-4">Stato della Classe</h2>
+    <Container fluid className="p-4">
+      <PageHeader title="Stato della Classe" icon="📊" />
+
+      <div className="d-flex justify-content-end">
+        <RefreshButton onClick={fetchStats} label="Aggiorna Stato" />
+      </div>
 
       <Form.Group className="mb-3" controlId="ordinamento">
         <Form.Label>Ordina per:</Form.Label>

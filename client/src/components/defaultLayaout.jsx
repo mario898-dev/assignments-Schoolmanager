@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import AppNavbar from '../components/AppNavbar';
 
-function StudentPage({ user, onLogout }) {
+function DefaultLayout({ user, onLogout }) {
   return (
     <>
       <AppNavbar user={user} onLogout={onLogout} />
@@ -10,4 +10,4 @@ function StudentPage({ user, onLogout }) {
   );
 }
 
-export default StudentPage;
+export default DefaultLayout;

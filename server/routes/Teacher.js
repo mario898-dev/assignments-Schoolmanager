@@ -1,11 +1,17 @@
 import express from 'express';
-import { getAllStudents, checkGroupValidity, createTask, 
-         valutaCompito, getTasksByTeacher , getClassSummary} from '../dao/teacherDAO.js';
+import {
+  getAllStudents,
+  checkGroupValidity,
+  createTask,
+  valutaCompito,
+  getTasksByTeacher,
+  getClassSummary
+} from '../dao/teacherDAO.js';
 
-const router = express.Router();
+export default function teacherRoutes({ isTeacher }) {
+  const router = express.Router();
 
-function teacherRoutes(auth) {
-  router.post('/tasks', auth.isTeacher, async (req, res) => {
+  router.post('/tasks', isTeacher, async (req, res) => {
     const { domanda, studenti } = req.body;
 
     if (!Array.isArray(studenti) || typeof domanda !== 'string') {
@@ -20,7 +26,7 @@ function teacherRoutes(auth) {
     }
   });
 
-  router.post('/tasks/check-group', auth.isTeacher, async (req, res) => {
+  router.post('/tasks/check-group', isTeacher, async (req, res) => {
     const { studentIds } = req.body;
     if (!Array.isArray(studentIds)) {
       return res.status(400).json({ error: 'Formato dati non valido' });
@@ -34,7 +40,7 @@ function teacherRoutes(auth) {
     }
   });
 
-  router.get('/students', auth.isTeacher, async (req, res) => {
+  router.get('/students', isTeacher, async (req, res) => {
     try {
       const studenti = await getAllStudents();
       res.json(studenti);
@@ -43,51 +49,43 @@ function teacherRoutes(auth) {
     }
   });
 
-  router.get('/teacher/tasks', auth.isTeacher, async (req, res) => {
-  const teacherID = req.user.id;
-  try {
-    const tasks = await getTasksByTeacher(teacherID);  // 👈 CHIAMATA QUI
-    res.json(tasks);
-  } catch (err) {
-    console.error('Errore recupero compiti docente:', err);
-    res.status(500).json({ error: 'Errore durante il recupero dei compiti' });
-  }
-});
+  router.get('/teacher/tasks', isTeacher, async (req, res) => {
+    const teacherID = req.user.id;
+    try {
+      const tasks = await getTasksByTeacher(teacherID);
+      res.json(tasks);
+    } catch (err) {
+      console.error('Errore recupero compiti docente:', err);
+      res.status(500).json({ error: 'Errore durante il recupero dei compiti' });
+    }
+  });
 
+  router.put('/teacher/tasks/:taskID/score', isTeacher, async (req, res) => {
+    const taskID = parseInt(req.params.taskID);
+    const teacherID = req.user.id;
+    const { score } = req.body;
 
-router.put('/teacher/tasks/:taskID/score', auth.isTeacher, async (req, res) => {
-  const taskID = parseInt(req.params.taskID);
-  const teacherID = req.user.id;
-  const { score } = req.body;
+    if (isNaN(taskID) || typeof score !== 'number' || score < 0 || score > 30) {
+      return res.status(400).json({ error: 'Score non valido' });
+    }
 
-  if (isNaN(taskID) || typeof score !== 'number' || score < 0 || score > 30) {
-    return res.status(400).json({ error: 'Score non valido' });
-  }
+    try {
+      await valutaCompito(taskID, teacherID, score);
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
 
-  try {
-    await valutaCompito(taskID, teacherID, score);
-    return res.status(200).json({ success: true });
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
-  }
-});
-
-
-// GET /api/teacher/class-summary - Stato generale della classe
-router.get('/teacher/stato-classe', auth.isTeacher, async (req, res) => {
-  try {
-    const data = await getClassSummary(req.user.id);
-    res.json(data);
-  } catch (err) {
-        console.error("Errore getClassStats:", err);
-
-    res.status(500).json({ error: 'Errore nel recupero dello stato della classe' });
-  }
-});
-
-
+  router.get('/teacher/stato-classe', isTeacher, async (req, res) => {
+    try {
+      const data = await getClassSummary(req.user.id);
+      res.json(data);
+    } catch (err) {
+      console.error('Errore getClassStats:', err);
+      res.status(500).json({ error: 'Errore nel recupero dello stato della classe' });
+    }
+  });
 
   return router;
 }
-
-export default teacherRoutes;

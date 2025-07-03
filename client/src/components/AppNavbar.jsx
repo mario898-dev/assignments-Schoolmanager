@@ -5,14 +5,15 @@ function AppNavbar({ user, onLogout }) {
   const navigate = useNavigate();
 
   return (
-    <Navbar bg="light" expand="lg" className="mb-4">
-      <Container>
-        <Navbar.Brand className="fw-bold">
-  School Manager <span style={{ fontSize: '1.2rem' }}> ➡️</span>
-</Navbar.Brand>
+    <Navbar bg="light" expand="lg" className="mb-0 border-bottom">
+      <Container fluid>
+        {/* Brand a sinistra */}
+        <Navbar.Brand className="fw-bold me-auto">
+          ➡️ School Manager
+        </Navbar.Brand>
 
-        <Nav className="me-auto">
-
+        {/* Nav centrato */}
+        <Nav className="mx-auto">
           {user?.role === 'teacher' && (
             <>
               <Nav.Link as={NavLink} to="/teacher">Home</Nav.Link>
@@ -21,7 +22,6 @@ function AppNavbar({ user, onLogout }) {
               <Nav.Link as={NavLink} to="/teacher/stato-classe">Stato Classe</Nav.Link>
             </>
           )}
-
           {user?.role === 'student' && (
             <>
               <Nav.Link as={NavLink} to="/student">Home</Nav.Link>
@@ -31,13 +31,17 @@ function AppNavbar({ user, onLogout }) {
           )}
         </Nav>
 
+        {/* User info a destra */}
         {user && (
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3 ms-auto">
             <span className="text-muted small">👤 {user.name}</span>
-            <Button variant="outline-secondary" size="sm" onClick={() => {
-              onLogout();
-              navigate('/login');
-            }}>Logout</Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={() => onLogout()}
+            >
+              Logout
+            </Button>
           </div>
         )}
       </Container>
@@ -46,4 +50,5 @@ function AppNavbar({ user, onLogout }) {
 }
 
 export default AppNavbar;
+
 

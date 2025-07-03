@@ -1,27 +1,34 @@
 import express from 'express';
 
-export default function createAuthRoutes(authenticator) {
+export default function createAuthRoutes(passport) {
   const router = express.Router();
 
   // LOGIN
-  router.post('/sessions', async (req, res, next) => {
-    try {
-      const user = await authenticator.login(req, res, next);
-      res.status(200).json(user);
-    } catch (err) {
-      res.status(401).json({ error: err.message || 'Login fallito' });
-    }
+   router.post('/sessions', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) return next(err);
+      if (!user) return res.status(401).json({ error: info?.message || 'Login fallito' });
+
+      req.login(user, err => {
+        if (err) return next(err);
+        return res.status(200).json(user);
+      });
+    })(req, res, next);
   });
 
   // LOGOUT
-  router.delete('/sessions/current', async (req, res) => {
-    await authenticator.logout(req, res);
-    res.status(204).end();
+  router.delete('/sessions/current', (req, res) => {
+    req.logout(() => {
+      res.status(204).end();
+    });
   });
 
   // CURRENT SESSION
-  router.get('/sessions/current', authenticator.isLoggedIn, (req, res) => {
-    res.status(200).json(req.user);
+  router.get('/sessions/current', (req, res) => {
+    if (req.isAuthenticated())
+      return res.status(200).json(req.user);
+    else
+      return res.status(401).json({ error: 'Utente non autenticato' });
   });
 
   return router;

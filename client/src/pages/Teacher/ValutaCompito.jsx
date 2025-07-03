@@ -1,24 +1,43 @@
 import { useEffect, useState } from 'react';
 import { Form, Button, Alert, Row, Col, Card, Container } from 'react-bootstrap';
+import RefreshButton from '../../components/RefreshButton';
+import PageHeader from '../../components/PageHeader';
 import API from '../../api/API.mjs';
 
-function ValutaCompito({ user, onLogout }) {
+function ValutaCompito() {
   const [compiti, setCompiti] = useState([]);
   const [valutazioni, setValutazioni] = useState({});
   const [errore, setErrore] = useState('');
   const [successo, setSuccesso] = useState('');
 
+  const fetchCompiti = async () => {
+    try {
+      const dati = await API.getCompitiCreati();
+      setCompiti(dati);
+      setErrore('');
+    } catch (err) {
+      setErrore('Errore nel caricamento dei compiti.');
+    }
+  };
+
   useEffect(() => {
-    const fetchCompiti = async () => {
-      try {
-        const dati = await API.getCompitiCreati(); // deve restituire anche status e risposta
-        setCompiti(dati);
-      } catch (err) {
-        setErrore('Errore nel caricamento dei compiti.');
-      }
-    };
     fetchCompiti();
   }, []);
+
+  useEffect(() => {
+  if (errore) {
+    const timer = setTimeout(() => setErrore(''), 3000);
+    return () => clearTimeout(timer);
+  }
+}, [errore]);
+
+useEffect(() => {
+  if (successo) {
+    const timer = setTimeout(() => setSuccesso(''), 3000);
+    return () => clearTimeout(timer);
+  }
+}, [successo]);
+
 
   const handleValuta = async (taskID) => {
     const score = valutazioni[taskID];
@@ -29,28 +48,34 @@ function ValutaCompito({ user, onLogout }) {
 
     try {
       await API.inviaValutazione(taskID, parseInt(score));
-      setSuccesso(`Compito ${taskID} valutato con successo.`);
+      setSuccesso(`Compito valutato con successo.`);
       setErrore('');
-      setCompiti(compiti.map(c =>
-        c.taskID === taskID ? { ...c, status: 'closed', score: parseInt(score) } : c
-      ));
+      setCompiti(prev =>
+        prev.map(c =>
+          c.taskID === taskID ? { ...c, status: 'closed', score: parseInt(score) } : c
+        )
+      );
     } catch (err) {
       setSuccesso('');
-      setErrore(err);
+      setErrore(err.message || 'Errore durante la valutazione.');
     }
   };
- 
 
   return (
-   <Container className="p-4">
-      <h2 className="mb-4">Valuta Compiti</h2>
+    <Container fluid className="p-4">
+      <PageHeader title="Valuta Compito" icon="✍️" />
+
       {errore && <Alert variant="danger">{errore}</Alert>}
       {successo && <Alert variant="success">{successo}</Alert>}
+
+      <div className="d-flex justify-content-end mb-3">
+        <RefreshButton onClick={fetchCompiti} label="Aggiorna Compiti" />
+      </div>
 
       <Row xs={1} md={2}>
         {compiti.map(task => (
           <Col key={task.taskID} className="mb-4">
-            <Card>
+            <Card className={`shadow-sm ${task.status === 'closed' ? 'bg-light' : 'bg-warning-subtle'}`}>
               <Card.Body>
                 <Card.Title>Domanda</Card.Title>
                 <Card.Text>{task.question}</Card.Text>

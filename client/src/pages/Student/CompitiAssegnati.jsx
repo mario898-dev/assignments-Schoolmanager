@@ -1,26 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Form, Button, Card, Container, Row, Col, Alert } from 'react-bootstrap';
+import RefreshButton from '../../components/RefreshButton';
+import PageHeader from '../../components/PageHeader';
 import API from '../../api/API.mjs';
 
-function CompitiAssegnati({ user, onLogout }) {
+function CompitiAssegnati({ user }) {
   const [compiti, setCompiti] = useState([]);
   const [risposte, setRisposte] = useState({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    if (!user || user.role !== 'student') return;
+  const fetchCompiti = async () => {
+    try {
+      const dati = await API.getCompitiAssegnati();
+      setCompiti(dati);
+    } catch (err) {
+      setError('Errore nel caricamento dei compiti.');
+    }
+  };
 
-    const fetchCompiti = async () => {
-      try {
-        const dati = await API.getCompitiAssegnati();
-        setCompiti(dati);
-      } catch (err) {
-        setError('Errore nel caricamento dei compiti.');
-      }
-    };
-    fetchCompiti();
-  }, []);
+  useEffect(() => {
+    if (user?.role === 'student') {
+      fetchCompiti();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (success) {
@@ -45,10 +48,20 @@ function CompitiAssegnati({ user, onLogout }) {
   };
 
   return (
-    <Container>
-      <h2 className="mb-4">Compiti Assegnati</h2>
+      <Container fluid className="p-4">
+      <PageHeader title="Compiti Assegnati" icon="✍️" />
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
+      
+      <div className="d-flex justify-content-end mb-3">
+        <RefreshButton onClick={fetchCompiti} label="Aggiorna Compiti" />
+      </div>
+
+
+      {/* Messaggio se non ci sono compiti aperti */}
+      {compiti.filter(c => c.status === 'open').length === 0 && (
+        <Alert variant="info">Nessun compito attivo presente.</Alert>
+      )}
 
       <Row xs={1} md={2}>
         {compiti.map(task => (

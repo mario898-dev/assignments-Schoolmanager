@@ -1,63 +1,58 @@
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Container, Badge } from 'react-bootstrap';
 
 function TeacherHome({ user }) {
   return (
-    <div className="p-4">
+    <Container fluid className="py-4">
+      <h2 className="mb-4">👩‍🏫 Benvenut*, <strong>{user.name}</strong>!</h2>
+
       <Row>
-        {/* Profilo docente */}
+        {/* Colonna sinistra - Profilo docente */}
         <Col md={4}>
-          <Card className="text-center">
-            <Card.Body>
-              <div style={{ fontSize: '4rem' }}>👩‍🏫</div> {/* Emoji profilo docente */}
-              <Card.Title className="mt-3">{user.name}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{user.email}</Card.Subtitle>
-              <Card.Text>Ruolo: <strong>Docente</strong></Card.Text>
+          <Card className="shadow-sm">
+            <Card.Body className="text-center bg-light rounded">
+              <div style={{ fontSize: '4rem' }}>👨‍🏫</div>
+              <h5 className="mt-3">{user.name}</h5>
+              <p className="text-muted mb-1">{user.email}</p>
+              <Badge bg="dark">Ruolo: Docente</Badge>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Statistiche */}
+        {/* Colonna destra - Guida alle funzionalità */}
         <Col md={8}>
-          <h4 className="mb-4">Riepilogo attività</h4>
-          <Row className="g-3">
-            <Col md={6}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>📋 Compiti Assegnati</Card.Title>
-                  <Card.Text className="fs-3">42</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={6}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>👨‍🎓 Studenti Coinvolti</Card.Title>
-                  <Card.Text className="fs-3">18</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={6}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>🔓 Compiti Aperti</Card.Title>
-                  <Card.Text className="fs-3">10</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={6}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>✅ Compiti Chiusi</Card.Title>
-                  <Card.Text className="fs-3">32</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+          <Card className="shadow-sm border-start border-info border-4">
+            <Card.Body>
+              <h5 className="mb-3">📌 Cosa puoi fare come docente</h5>
+              <ul className="mb-0">
+                <li>✏️ Creare nuovi compiti selezionando gruppi di studenti</li>
+                <li>📬 Visualizzare le risposte ai compiti assegnati</li>
+                <li>📊 Valutare i compiti con un punteggio da 0 a 30</li>
+                <li>📈 Monitorare lo stato generale della classe</li>
+              </ul>
+            </Card.Body>
+          </Card>
+
+      <Card className="mt-4 shadow-sm border-start border-warning border-4">
+        <Card.Body>
+          <h5 className="mb-3 text-warning">⚠️ Attenzione alle regole nella creazione dei compiti</h5>
+          <ul className="mb-0">
+            <li>
+              Non puoi creare un gruppo in cui <strong>una qualunque coppia di studenti</strong> abbia già lavorato insieme in <strong>almeno 2 compiti precedenti</strong> creati da te.
+            </li>
+            <li>
+              I gruppi devono contenere tra <strong>2 e 6 studenti</strong>.
+            </li>
+            <li>
+              Dopo la creazione, il compito sarà <strong>automaticamente aperto</strong> e modificabile dagli studenti.
+            </li>
+          </ul>
+        </Card.Body>
+      </Card>
+
         </Col>
       </Row>
-    </div>
+    </Container>
   );
 }
 
 export default TeacherHome;
-
