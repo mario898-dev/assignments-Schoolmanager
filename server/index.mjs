@@ -4,10 +4,10 @@ import morgan from 'morgan';
 import session from 'express-session';
 import { Strategy as LocalStrategy } from 'passport-local';
 import passport from 'passport';
-import { getUser, /*getUserByEmail*/ } from './dao/userDAO.js';
-import authRoutes from './routes/Auth.js';
-import teacherRouter from './routes/Teacher.js';
-import studentRouter from './routes/Student.js'
+import  getUser from './dao/userDAO.js';
+import authRoutes from './routes/Auth.mjs';
+import teacherRouter from './routes/Teacher.mjs';
+import studentRouter from './routes/Student.mjs'
 
 const app = express();
 const port = 3001;

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import API from '../../api/API.mjs';
-import { Table, Container, Alert, Form } from 'react-bootstrap';
-import RefreshButton from '../../components/RefreshButton';
-import PageHeader from '../../components/PageHeader';
+import { Table, Alert, Form } from 'react-bootstrap';
+import CustomContainer from '../../components/common/CustomContainer';
+import RefreshButton from '../../components/common/RefreshButton';
+import PageHeader from '../../components/common/PageHeader';
 
 function StatoClasse() {
   const [studenti, setStudenti] = useState([]);
@@ -31,7 +32,7 @@ function StatoClasse() {
   });
 
   return (
-    <Container fluid className="p-4">
+    <CustomContainer>
       <PageHeader title="Stato della Classe" icon="📊" />
 
       <div className="d-flex justify-content-end">
@@ -69,7 +70,7 @@ function StatoClasse() {
           ))}
         </tbody>
       </Table>
-    </Container>
+    </CustomContainer>
   );
 }
 

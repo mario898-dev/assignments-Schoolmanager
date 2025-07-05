@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/API.mjs';
-import { Form, Button, Alert, Row, Col, ListGroup, Badge, Container } from 'react-bootstrap';
-import PageHeader from '../../components/PageHeader';
+import { Row, Col } from 'react-bootstrap';
+import PageHeader from '../../components/common/PageHeader';
+import CustomContainer from '../../components/common/CustomContainer';
+import CompitoForm from '../../components/Teacher/CompitoForm';
+import SelezionaStudenti from '../../components/Teacher/SelezionaStudenti';
 
-function NuovoCompito({ user, onLogout }) {
+function NuovoCompito() {
   const [domanda, setDomanda] = useState('');
   const [studenti, setStudenti] = useState([]);
   const [studentiSelezionati, setStudentiSelezionati] = useState([]);
   const [errore, setErrore] = useState('');
   const [successo, setSuccesso] = useState('');
 
-
   useEffect(() => {
     const fetchStudenti = async () => {
       try {
         const res = await API.getAllStudents();
         setStudenti(res);
-      } catch (err) {
+      } catch {
         setErrore('Errore nel caricamento degli studenti.');
       }
     };
@@ -24,25 +26,29 @@ function NuovoCompito({ user, onLogout }) {
   }, []);
 
   useEffect(() => {
-  if (errore) {
-    const timer = setTimeout(() => setErrore(''), 3000);
+    if (errore) {
+      const timer = setTimeout(() => setErrore(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errore]);
+
+  useEffect(() => {
+  if (successo) {
+    const timer = setTimeout(() => setSuccesso(''), 3000);
     return () => clearTimeout(timer);
   }
-}, [errore]);
+}, [successo]);
 
 
   const toggleSelezione = (id) => {
     setStudentiSelezionati(prev =>
-      prev.includes(id)
-        ? prev.filter(x => x !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrore('');
-
     if (studentiSelezionati.length < 2 || studentiSelezionati.length > 6) {
       setErrore('Un gruppo deve avere da 2 a 6 studenti.');
       return;
@@ -59,73 +65,38 @@ function NuovoCompito({ user, onLogout }) {
       setSuccesso('Compito creato con successo!');
       setDomanda('');
       setStudentiSelezionati([]);
-    } catch (err) {
+    } catch {
       setErrore('Errore nella creazione del compito.');
     }
   };
 
   return (
-  <Container fluid className="p-4">
-     
-        <PageHeader title="Crea Nuovo Compito" icon="📘" />
+    <CustomContainer>
+      <PageHeader title="Crea Nuovo Compito" icon="📘" />
       <div className="p-4">
         <Row>
           <Col md={6}>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" controlId="domanda">
-                <Form.Label>Domanda</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  value={domanda}
-                  onChange={e => setDomanda(e.target.value)}
-                  required
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Studenti selezionati</Form.Label>
-                <div>
-                  {studentiSelezionati.map(id => {
-                    const stud = studenti.find(s => s.id === id);
-                    return (
-                      <Badge bg="secondary" pill className="me-1" key={id}>
-                        {stud?.name}
-                      </Badge>
-                    );
-                  })}
-                </div>
-              </Form.Group>
-          
-              {errore && <Alert variant="danger">{errore}</Alert>}
-              {successo && <Alert variant="success">{successo}</Alert>}
-
-              <Button type="submit">Crea Compito</Button>
-            </Form>
+            <CompitoForm
+              domanda={domanda}
+              onDomandaChange={setDomanda}
+              studenti={studenti}
+              studentiSelezionati={studentiSelezionati}
+              onSubmit={handleSubmit}
+              errore={errore}
+              successo={successo}
+            />
           </Col>
-
           <Col md={6}>
             <h5>Seleziona Studenti</h5>
-            <ListGroup style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              {studenti.map(s => (
-                <ListGroup.Item
-                  key={s.id}
-                  action
-                  style={{
-                    backgroundColor: studentiSelezionati.includes(s.id) ? '#f0f0f0' : 'white',
-                    fontWeight: studentiSelezionati.includes(s.id) ? '500' : 'normal',
-                  }}
-                  onClick={() => toggleSelezione(s.id)}
-                >
-                  {s.name} <small className="text-muted">({s.email})</small>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
+            <SelezionaStudenti
+              studenti={studenti}
+              studentiSelezionati={studentiSelezionati}
+              onToggle={toggleSelezione}
+            />
           </Col>
         </Row>
       </div>
-      </Container>
-   
+    </CustomContainer>
   );
 }
 

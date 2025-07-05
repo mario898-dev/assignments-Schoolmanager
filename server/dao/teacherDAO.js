@@ -44,7 +44,6 @@ export function createTask(teacherId, question, studentIds) {
   });
 }
 
-
 export function checkGroupValidity(studentIds, teacherId) {
   return new Promise((resolve, reject) => {
     const sql = `
@@ -91,9 +90,8 @@ export function checkGroupValidity(studentIds, teacherId) {
 export function getTasksByTeacher(teacherID) {
   return new Promise((resolve, reject) => {
     const sql = `
-      SELECT T.taskID, T.question, T.status, T.score, A.answer_text AS risposta
+      SELECT T.taskID, T.question, T.status, T.score, T.answer_text AS risposta
       FROM Tasks T
-      LEFT JOIN answers A ON A.taskID = T.taskID
       WHERE T.teacherID = ?
     `;
     db.all(sql, [teacherID], (err, rows) => {
@@ -115,7 +113,6 @@ export function valutaCompito(taskID, teacherID, score) {
         return reject(err);
       }
       if (this.changes === 0) {
-        // Nessun compito aggiornato → non trovato, o non modificabile
         return reject(new Error('Compito non trovato o già valutato'));
       }
       resolve(true);
@@ -123,33 +120,46 @@ export function valutaCompito(taskID, teacherID, score) {
   });
 }
 
-export function getClassSummary(teacherID) {
+export function getClassSummary(teacherId) {
   return new Promise((resolve, reject) => {
-
     const sql = `
-      SELECT u.userID AS id,
-             u.name,
-             COUNT(CASE WHEN t.status = 'open' THEN 1 END) AS aperti,
-             COUNT(CASE WHEN t.status = 'closed' THEN 1 END) AS chiusi,
-             ROUND(AVG(CASE WHEN t.status = 'closed' THEN t.score END), 2) AS media
+      SELECT 
+        u.userID AS id,
+        u.name,
+        SUM(CASE WHEN t.status = 'open' THEN 1 ELSE 0 END) AS aperti,
+        SUM(CASE WHEN t.status = 'closed' THEN 1 ELSE 0 END) AS chiusi,
+        SUM(CASE WHEN t.status = 'closed' AND t.score IS NOT NULL THEN t.score * (1.0 / sub.groupSize) ELSE 0 END) AS weightedSum,
+        SUM(CASE WHEN t.status = 'closed' AND t.score IS NOT NULL THEN (1.0 / sub.groupSize) ELSE 0 END) AS totalWeight
       FROM users u
       LEFT JOIN task_Members tm ON u.userID = tm.studentID
       LEFT JOIN Tasks t ON tm.taskID = t.taskID AND t.teacherID = ?
+      LEFT JOIN (
+        SELECT taskID, COUNT(*) AS groupSize
+        FROM task_Members
+        GROUP BY taskID
+      ) AS sub ON t.taskID = sub.taskID
       WHERE u.role = 'student'
       GROUP BY u.userID
     `;
 
-    db.all(sql, [teacherID], (err, rows) => {
+    db.all(sql, [teacherId], (err, rows) => {
       if (err) {
-        console.error('Errore query semplificata:', err);
-
         reject(err);
       } else {
-        resolve(rows);
+        const result = rows.map(row => ({
+          id: row.id,
+          name: row.name,
+          aperti: row.aperti,
+          chiusi: row.chiusi,
+          media: row.totalWeight > 0 ? parseFloat((row.weightedSum / row.totalWeight).toFixed(2)) : null
+        }));
+        resolve(result);
       }
     });
   });
 }
+
+
 
 
 

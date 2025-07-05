@@ -11,11 +11,6 @@ const db = new sqlite3.Database('./db/database.db', (err) => {
 db.serialize(() => {
   db.run('PRAGMA foreign_keys = OFF');
 
-  db.run('DELETE FROM answers', function (err) {
-    if (err) return console.error('Errore pulizia answer:', err.message);
-    console.log('Tabella answer pulita.');
-  });
-
   db.run('DELETE FROM task_Members', function (err) {
     if (err) return console.error('Errore pulizia task_Members:', err.message);
     console.log('Tabella task_Members pulita.');

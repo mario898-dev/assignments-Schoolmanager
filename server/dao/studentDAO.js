@@ -7,10 +7,9 @@ export function getTasksForStudent(studentID) {
         t.taskID,
         t.question,
         t.status,
-        a.answer_text AS risposta
+        t.answer_text AS risposta
       FROM task_Members tm
       JOIN Tasks t ON t.taskID = tm.taskID
-      LEFT JOIN answers a ON a.taskID = tm.taskID
       WHERE tm.studentID = ? AND t.status = 'open'
     `;
 
@@ -31,25 +30,20 @@ export function getTasksForStudent(studentID) {
   });
 }
 
-/**
- * Salva o aggiorna la risposta di uno studente a un compito.
- * Se esiste già, la aggiorna.
- */
 export function saveOrUpdateAnswer(taskID, answerText) {
   return new Promise((resolve, reject) => {
     const sql = `
-      INSERT INTO answers (taskID, answer_text)
-      VALUES (?, ?)
-      ON CONFLICT(taskID)
-      DO UPDATE SET answer_text = excluded.answer_text
+      UPDATE Tasks
+      SET answer_text = ?
+      WHERE taskID = ? AND status = 'open'
     `;
-    db.run(sql, [taskID, answerText], function (err) {
+
+    db.run(sql, [answerText, taskID], function (err) {
       if (err) return reject(err);
       resolve(true);
     });
   });
 }
-
 
 export function getTaskByID(taskID) {
   return new Promise((resolve, reject) => {

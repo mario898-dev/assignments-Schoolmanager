@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Form, Button, Alert, Row, Col, Card, Container } from 'react-bootstrap';
-import RefreshButton from '../../components/RefreshButton';
-import PageHeader from '../../components/PageHeader';
+import { Alert, Row, Col } from 'react-bootstrap';
+import RefreshButton from '../../components/common/RefreshButton';
+import PageHeader from '../../components/common/PageHeader';
+import CustomContainer from '../../components/common/CustomContainer';
+import CompitoDaValutare from '../../components/Teacher/CompitoDaValutare';
 import API from '../../api/API.mjs';
 
 function ValutaCompito() {
@@ -15,7 +17,7 @@ function ValutaCompito() {
       const dati = await API.getCompitiCreati();
       setCompiti(dati);
       setErrore('');
-    } catch (err) {
+    } catch {
       setErrore('Errore nel caricamento dei compiti.');
     }
   };
@@ -25,19 +27,18 @@ function ValutaCompito() {
   }, []);
 
   useEffect(() => {
-  if (errore) {
-    const timer = setTimeout(() => setErrore(''), 3000);
-    return () => clearTimeout(timer);
-  }
-}, [errore]);
+    if (errore) {
+      const timer = setTimeout(() => setErrore(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errore]);
 
-useEffect(() => {
-  if (successo) {
-    const timer = setTimeout(() => setSuccesso(''), 3000);
-    return () => clearTimeout(timer);
-  }
-}, [successo]);
-
+  useEffect(() => {
+    if (successo) {
+      const timer = setTimeout(() => setSuccesso(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successo]);
 
   const handleValuta = async (taskID) => {
     const score = valutazioni[taskID];
@@ -48,7 +49,7 @@ useEffect(() => {
 
     try {
       await API.inviaValutazione(taskID, parseInt(score));
-      setSuccesso(`Compito valutato con successo.`);
+      setSuccesso('Compito valutato con successo.');
       setErrore('');
       setCompiti(prev =>
         prev.map(c =>
@@ -62,9 +63,8 @@ useEffect(() => {
   };
 
   return (
-    <Container fluid className="p-4">
+    <CustomContainer>
       <PageHeader title="Valuta Compito" icon="✍️" />
-
       {errore && <Alert variant="danger">{errore}</Alert>}
       {successo && <Alert variant="success">{successo}</Alert>}
 
@@ -75,48 +75,18 @@ useEffect(() => {
       <Row xs={1} md={2}>
         {compiti.map(task => (
           <Col key={task.taskID} className="mb-4">
-            <Card className={`shadow-sm ${task.status === 'closed' ? 'bg-light' : 'bg-warning-subtle'}`}>
-              <Card.Body>
-                <Card.Title>Domanda</Card.Title>
-                <Card.Text>{task.question}</Card.Text>
-
-                {task.risposta ? (
-                  <>
-                    <hr />
-                    <Card.Subtitle className="mb-2 text-muted">Risposta del gruppo</Card.Subtitle>
-                    <Form.Control as="textarea" value={task.risposta} readOnly rows={4} />
-                  </>
-                ) : (
-                  <p className="text-muted">Nessuna risposta inviata.</p>
-                )}
-
-                {task.status === 'open' && task.risposta ? (
-                  <>
-                    <Form.Group className="mt-3">
-                      <Form.Label>Inserisci valutazione (0–30)</Form.Label>
-                      <Form.Control
-                        type="number"
-                        min="0"
-                        max="30"
-                        value={valutazioni[task.taskID] ?? ''}
-                        onChange={e =>
-                          setValutazioni({ ...valutazioni, [task.taskID]: e.target.value })
-                        }
-                      />
-                    </Form.Group>
-                    <Button className="mt-2" onClick={() => handleValuta(task.taskID)}>
-                      Valuta
-                    </Button>
-                  </>
-                ) : task.status === 'closed' ? (
-                  <p className="mt-3 fw-bold text-success">Valutato: {task.score}/30</p>
-                ) : null}
-              </Card.Body>
-            </Card>
+            <CompitoDaValutare
+              task={task}
+              valutazione={valutazioni[task.taskID]}
+              onChangeValutazione={(id, val) =>
+                setValutazioni({ ...valutazioni, [id]: val })
+              }
+              onValuta={handleValuta}
+            />
           </Col>
         ))}
       </Row>
-    </Container>
+    </CustomContainer>
   );
 }
 

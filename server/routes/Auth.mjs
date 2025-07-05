@@ -3,7 +3,7 @@ import express from 'express';
 export default function createAuthRoutes(passport) {
   const router = express.Router();
 
-  // LOGIN
+  // login
    router.post('/sessions', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
       if (err) return next(err);
@@ -16,14 +16,14 @@ export default function createAuthRoutes(passport) {
     })(req, res, next);
   });
 
-  // LOGOUT
+  // logout
   router.delete('/sessions/current', (req, res) => {
     req.logout(() => {
       res.status(204).end();
     });
   });
 
-  // CURRENT SESSION
+  // current session
   router.get('/sessions/current', (req, res) => {
     if (req.isAuthenticated())
       return res.status(200).json(req.user);

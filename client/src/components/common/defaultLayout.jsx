@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import AppNavbar from '../components/AppNavbar';
+import AppNavbar from './AppNavbar';
 
 function DefaultLayout({ user, onLogout }) {
   return (

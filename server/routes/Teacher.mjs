@@ -55,7 +55,7 @@ export default function teacherRoutes({ isTeacher }) {
       const tasks = await getTasksByTeacher(teacherID);
       res.json(tasks);
     } catch (err) {
-      console.error('Errore recupero compiti docente:', err);
+     // console.error('Errore recupero compiti docente:', err);
       res.status(500).json({ error: 'Errore durante il recupero dei compiti' });
     }
   });
@@ -82,7 +82,6 @@ export default function teacherRoutes({ isTeacher }) {
       const data = await getClassSummary(req.user.id);
       res.json(data);
     } catch (err) {
-      console.error('Errore getClassStats:', err);
       res.status(500).json({ error: 'Errore nel recupero dello stato della classe' });
     }
   });

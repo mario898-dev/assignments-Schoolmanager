@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:3001/api/";  // aggiunto /api/ e slash finale
+const baseURL = "http://localhost:3001/api/";
 
 /** ------------------- Access APIs ------------------------ */
 
@@ -49,21 +49,19 @@ async function getUserInfo() {
 
 /** ------------------- Teacher APIs ------------------------ */
 
-// Ottiene la lista completa degli studenti
 async function getAllStudents() {
   const res = await fetch(baseURL + 'students', {
     credentials: 'include'
   });
 
   if (res.ok) {
-    return await res.json(); // array di { id, name }
+    return await res.json();
   } else {
     const errDetail = await res.json().catch(() => ({}));
     throw errDetail?.error || errDetail?.message || "Errore nel recupero degli studenti";
   }
 }
 
-// Verifica se un gruppo è valido (nessuna coppia con ≥2 compiti in comune)
 async function validaGruppo(studentIds) {
   const res = await fetch(baseURL + 'tasks/check-group', {
     method: 'POST',
@@ -75,7 +73,7 @@ async function validaGruppo(studentIds) {
   });
 
   if (res.ok) {
-    return await res.json(); // { valido: true/false }
+    return await res.json();
   } else {
     const errDetail = await res.json().catch(() => ({}));
     throw errDetail?.error || errDetail?.message || "Errore nella validazione del gruppo";
@@ -90,7 +88,7 @@ async function creaCompito({ domanda, studenti }) {
       'Content-Type': 'application/json'
     },
     
-    body: JSON.stringify({ domanda, studenti })  // usa la stessa chiave attesa dal backend
+    body: JSON.stringify({ domanda, studenti })
   });
  
   if (!res.ok) {
@@ -131,7 +129,7 @@ async function getStatoClasse() {
   });
 
   if (res.ok) {
-    return await res.json();  // Array di { id, name, aperti, chiusi, media }
+    return await res.json();
   } else {
     const errDetail = await res.json().catch(() => ({}));
     throw errDetail?.error || errDetail?.message || "Errore nel recupero dello stato della classe";
@@ -146,7 +144,7 @@ async function getCompitiAssegnati() {
   });
 
   if (res.ok) {
-    return await res.json();  // [{ taskID, question, risposta }]
+    return await res.json();
   } else {
     const errDetail = await res.json().catch(() => ({}));
     throw errDetail?.error || errDetail?.message || "Errore nel recupero dei compiti";
@@ -154,7 +152,7 @@ async function getCompitiAssegnati() {
 }
 
 async function inviaRisposta(taskID, answerText) {
-  const res = await fetch(baseURL + `student/answers/${taskID}`, {
+  const res = await fetch(baseURL + `student/tasks/${taskID}/answer`, {
     method: 'PUT',
     credentials: 'include',
     headers: {
@@ -169,21 +167,18 @@ async function inviaRisposta(taskID, answerText) {
   }
 }
 
-// Ottiene tutti i punteggi ricevuti dallo studente e la media
 async function getPunteggiStudent() {
   const res = await fetch(baseURL + 'student/grades', {
     credentials: 'include'
   });
 
   if (res.ok) {
-    return await res.json(); // { compiti: [{ taskID, question, score }], media: number }
+    return await res.json();
   } else {
     const errDetail = await res.json().catch(() => ({}));
     throw errDetail?.error || errDetail?.message || "Errore nel recupero dei punteggi";
   }
 }
-
-
 
 export default { login, logOut, getUserInfo, getAllStudents, 
                  validaGruppo, creaCompito, getCompitiAssegnati, inviaRisposta, 

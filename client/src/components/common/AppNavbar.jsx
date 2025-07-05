@@ -7,12 +7,11 @@ function AppNavbar({ user, onLogout }) {
   return (
     <Navbar bg="light" expand="lg" className="mb-0 border-bottom">
       <Container fluid>
-        {/* Brand a sinistra */}
+    
         <Navbar.Brand className="fw-bold me-auto">
           ➡️ School Manager
         </Navbar.Brand>
 
-        {/* Nav centrato */}
         <Nav className="mx-auto">
           {user?.role === 'teacher' && (
             <>
@@ -31,7 +30,6 @@ function AppNavbar({ user, onLogout }) {
           )}
         </Nav>
 
-        {/* User info a destra */}
         {user && (
           <div className="d-flex align-items-center gap-3 ms-auto">
             <span className="text-muted small">👤 {user.name}</span>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Badge, Alert } from 'react-bootstrap';
-import RefreshButton from '../../components/RefreshButton';
-import PageHeader from '../../components/PageHeader';
+import { Row, Col, Badge, Alert } from 'react-bootstrap';
+import RefreshButton from '../../components/common/RefreshButton';
+import PageHeader from '../../components/common/PageHeader';
+import CustomContainer from '../../components/common/CustomContainer';
 import API from '../../api/API.mjs';
 
 function PunteggiStudent() {
@@ -25,7 +26,7 @@ function PunteggiStudent() {
   }, []);
 
   return (
-    <Container fluid className="p-4">
+    <CustomContainer>
       <PageHeader title="Valutazioni" icon="📈" />
 
       {errore && <Alert variant="danger">{errore}</Alert>}
@@ -63,7 +64,7 @@ function PunteggiStudent() {
           )}
         </Col>
       </Row>
-    </Container>
+    </CustomContainer>
   );
 }
 

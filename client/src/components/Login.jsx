@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Form, Button, Card } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { Form, Button, Card, Alert } from 'react-bootstrap';
 
-function Login({ onLogin }) {
+function Login({ onLogin, message, clearMessage }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -9,6 +9,11 @@ function Login({ onLogin }) {
     e.preventDefault();
     onLogin(email, password);
   };
+
+  // Svuota l'errore se l'utente modifica i campi
+  useEffect(() => {
+    if (message) clearMessage?.();
+  }, [email, password]);
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
@@ -18,6 +23,8 @@ function Login({ onLogin }) {
           <h3 className="fw-bold mt-2">Accesso alla piattaforma</h3>
           <p className="text-muted small">Inserisci le tue credenziali per continuare</p>
         </div>
+
+        {message && <Alert variant="danger">{message}</Alert>}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">

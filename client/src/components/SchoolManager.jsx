@@ -12,7 +12,7 @@ import StatoClasse from '../pages/Teacher/StatoClasse';
 import PunteggiStudent from '../pages/Student/PunteggiStudent';
 import TeacherHome from '../pages/Teacher/TeacherHome';
 import StudentHome from '../pages/Student/StudentHome';
-import DefaultLayout from './defaultLayaout';
+import DefaultLayout from './common/defaultLayout';
 import PageNotFound from '../pages/PageNotFound';
 
 function SchoolManager() {
@@ -58,6 +58,16 @@ function SchoolManager() {
       setLoginMessage("Errore durante il login");
     }
   };
+
+   useEffect(() => {
+  if (loginMessage) {
+    const timer = setTimeout(() => {
+      setLoginMessage('');
+    }, 3000); // 3 secondi
+
+    return () => clearTimeout(timer); // cleanup se il componente cambia prima
+  }
+}, [loginMessage]);
 
 
   const doLogout = async () => {

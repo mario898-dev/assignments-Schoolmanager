@@ -10,20 +10,17 @@ import {
 export default function studentRoutes({ isStudent }) {
   const router = express.Router();
 
-  // GET /api/student/tasks
   router.get('/student/tasks', isStudent, async (req, res) => {
     try {
       const studentID = req.user.id;
       const tasks = await getTasksForStudent(studentID);
       res.json(tasks);
     } catch (err) {
-      console.error('Errore getTasksForStudent:', err);
       res.status(500).json({ error: 'Errore nel recupero dei compiti' });
     }
   });
 
-  // PUT /api/student/answers/:taskID
-  router.put('/student/answers/:taskID', isStudent, async (req, res) => {
+  router.put('/student/tasks/:taskID/answer', isStudent, async (req, res) => {
     const studentID = req.user.id;
     const taskID = parseInt(req.params.taskID);
     const { risposta } = req.body;
@@ -56,14 +53,12 @@ export default function studentRoutes({ isStudent }) {
     }
   });
 
-  // GET /api/student/grades
   router.get('/student/grades', isStudent, async (req, res) => {
     try {
       const studentID = req.user.id;
       const result = await getStudentGrades(studentID);
       res.json(result);
     } catch (err) {
-      console.error('Errore getStudentGrades:', err);
       res.status(500).json({ error: 'Errore nel recupero dei punteggi' });
     }
   });

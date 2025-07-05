@@ -1,8 +1,7 @@
-import sqlite3 from 'sqlite3';
 import crypto from 'crypto';
 import db from '../db/openDB.js';
 
-export function getUser(email, password) {
+export default function getUser(email, password) {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM users WHERE email = ?';
     db.get(sql, [email], (err, row) => {

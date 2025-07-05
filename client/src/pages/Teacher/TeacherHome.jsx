@@ -1,8 +1,9 @@
-import { Row, Col, Card, Container, Badge } from 'react-bootstrap';
+import { Row, Col, Card, Badge } from 'react-bootstrap';
+import CustomContainer from '../../components/common/CustomContainer';
 
 function TeacherHome({ user }) {
   return (
-    <Container fluid className="py-4">
+    <CustomContainer>
       <h2 className="mb-4">👩‍🏫 Benvenut*, <strong>{user.name}</strong>!</h2>
 
       <Row>
@@ -51,7 +52,7 @@ function TeacherHome({ user }) {
 
         </Col>
       </Row>
-    </Container>
+    </CustomContainer>
   );
 }
 
