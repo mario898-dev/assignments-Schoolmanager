@@ -17,6 +17,7 @@ function CompitiAssegnati({ user }) {
       const dati = await API.getCompitiAssegnati();
       setCompiti(dati);
 
+      //Per aggiornare il box risposta quando altri studenti rispondono
       const nuoveRisposte = {};
       dati.forEach(c => {
         if (c.risposta) {

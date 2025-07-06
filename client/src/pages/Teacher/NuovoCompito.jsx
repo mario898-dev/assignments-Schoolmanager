@@ -26,19 +26,14 @@ function NuovoCompito() {
   }, []);
 
   useEffect(() => {
-    if (errore) {
-      const timer = setTimeout(() => setErrore(''), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [errore]);
-
-  useEffect(() => {
-  if (successo) {
-    const timer = setTimeout(() => setSuccesso(''), 3000);
+  if (errore || successo) {
+    const timer = setTimeout(() => {
+      setErrore('');
+      setSuccesso('');
+    }, 3000);
     return () => clearTimeout(timer);
   }
-}, [successo]);
-
+}, [errore, successo]);
 
   const toggleSelezione = (id) => {
     setStudentiSelezionati(prev =>
@@ -47,7 +42,7 @@ function NuovoCompito() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); //Per impedire il refresh automatico
     setErrore('');
     if (studentiSelezionati.length < 2 || studentiSelezionati.length > 6) {
       setErrore('Un gruppo deve avere da 2 a 6 studenti.');

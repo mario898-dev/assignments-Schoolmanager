@@ -101,7 +101,6 @@ function SchoolManager() {
               <HomePage
                 user={user}
                 onLogin={doLogin}
-                onLogout={doLogout}
                 message={loginMessage}
                 clearMessage={setLoginMessage}
               />
@@ -109,15 +108,14 @@ function SchoolManager() {
           }
         />
 
-
-        {/* Layout protetto con navbar */}
+        {/* Layout protetto + navbar */}
         <Route element={<DefaultLayout user={user} onLogout={doLogout} />}>
           {/* Area Docente */}
           <Route
             path="/teacher"
             element={
               user?.role === 'teacher' ? (
-                <TeacherHome user={user} onLogout={doLogout} />
+                <TeacherHome user={user}/>
               ) : (
                 <Navigate to="/" />
               )
@@ -127,7 +125,7 @@ function SchoolManager() {
             path="/teacher/nuovo-compito"
             element={
               user?.role === 'teacher' ? (
-                <NuovoCompito user={user} onLogout={doLogout} />
+                <NuovoCompito/>
               ) : (
                 <Navigate to="/" />
               )
@@ -137,7 +135,7 @@ function SchoolManager() {
             path="/teacher/valuta-compiti"
             element={
               user?.role === 'teacher' ? (
-                <ValutaCompito user={user} onLogout={doLogout} />
+                <ValutaCompito/>
               ) : (
                 <Navigate to="/" />
               )
@@ -147,7 +145,7 @@ function SchoolManager() {
             path="/teacher/stato-classe"
             element={
               user?.role === 'teacher' ? (
-                <StatoClasse user={user} onLogout={doLogout} />
+                <StatoClasse/>
               ) : (
                 <Navigate to="/" />
               )
@@ -159,7 +157,7 @@ function SchoolManager() {
             path="/student"
             element={
               user?.role === 'student' ? (
-                <StudentHome user={user} onLogout={doLogout} />
+                <StudentHome user={user}/>
               ) : (
                 <Navigate to="/" />
               )
@@ -169,7 +167,7 @@ function SchoolManager() {
             path="/student/compiti"
             element={
               user?.role === 'student' ? (
-                <CompitiAssegnati user={user} onLogout={doLogout} />
+                <CompitiAssegnati user={user}/>
               ) : (
                 <Navigate to="/" />
               )
@@ -179,7 +177,7 @@ function SchoolManager() {
             path="/student/punteggi"
             element={
               user?.role === 'student' ? (
-                <PunteggiStudent user={user} onLogout={doLogout} />
+                <PunteggiStudent/>
               ) : (
                 <Navigate to="/" />
               )

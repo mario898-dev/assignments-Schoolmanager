@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import API from '../../api/API.mjs';
-import { Table, Alert, Form } from 'react-bootstrap';
+import { Alert, Form, Row, Col, Badge, Card } from 'react-bootstrap';
 import CustomContainer from '../../components/common/CustomContainer';
 import RefreshButton from '../../components/common/RefreshButton';
 import PageHeader from '../../components/common/PageHeader';
@@ -35,11 +35,11 @@ function StatoClasse() {
     <CustomContainer>
       <PageHeader title="Stato della Classe" icon="📊" />
 
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-end mb-3">
         <RefreshButton onClick={fetchStats} label="Aggiorna Stato" />
       </div>
 
-      <Form.Group className="mb-3" controlId="ordinamento">
+      <Form.Group className="mb-4" controlId="ordinamento">
         <Form.Label>Ordina per:</Form.Label>
         <Form.Select value={ordinamento} onChange={(e) => setOrdinamento(e.target.value)}>
           <option value="nome">Nome</option>
@@ -50,28 +50,33 @@ function StatoClasse() {
 
       {errore && <Alert variant="danger">{errore}</Alert>}
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>Studente</th>
-            <th>Compiti Aperti</th>
-            <th>Compiti Chiusi</th>
-            <th>Media Punteggi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentiOrdinati.map((s) => (
-            <tr key={s.id}>
-              <td>{s.name}</td>
-              <td>{s.aperti}</td>
-              <td>{s.chiusi}</td>
-              <td>{s.media?.toFixed(2) ?? '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      {/* Intestazione */}
+      <Row className="fw-bold py-2 border-bottom text-muted">
+        <Col xs={12} md={4}>Studente</Col>
+        <Col xs={6} md={2}>Aperti</Col>
+        <Col xs={6} md={2}>Chiusi</Col>
+        <Col xs={6} md={2}>Totale</Col>
+        <Col xs={6} md={2}>Media</Col>
+      </Row>
+
+      {studentiOrdinati.map((s) => (
+        <Row key={s.id} className="py-3 border-bottom align-items-center">
+          <Col xs={12} md={4} className="fw-semibold">{s.name}</Col>
+          <Col xs={6} md={2}><Badge bg="warning">{s.aperti}</Badge></Col>
+          <Col xs={6} md={2}><Badge bg="success">{s.chiusi}</Badge></Col>
+          <Col xs={6} md={2}><Badge bg="secondary">{s.aperti + s.chiusi}</Badge></Col>
+          <Col xs={6} md={2}>
+            {s.media !== null ? (
+              <Badge bg="primary">{s.media.toFixed(2)}</Badge>
+            ) : (
+              <Badge bg="secondary">—</Badge>
+            )}
+          </Col>
+        </Row>
+      ))}
     </CustomContainer>
   );
 }
 
 export default StatoClasse;
+

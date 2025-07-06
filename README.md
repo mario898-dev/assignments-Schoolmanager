@@ -8,12 +8,14 @@
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/`                       | **Entry Point** dell’applicazione. Gli utenti devono autenticarsi per accedere alle funzionalità dell'app.                                                                                                                                                          |
 | `/teacher`                | Pagina riservata ai docenti. Visualizza le regole di utilizzo del proprio account.                                                                                                                                                                                  |
-| `/teacher/nuovo-compito`  | Permette al docente di **assegnare un nuovo compito** a un gruppo di studenti. Include un menù a tendina per la selezione e un form per la descrizione del compito. Le restrizioni sul gruppo (2-6 studenti, massimo 2 compiti in comune) sono gestite lato server. |
+| `/teacher/nuovo-compito`  | Permette al docente di **assegnare un nuovo compito** a un gruppo di studenti. Include un menù a tendina per la selezione e un form per la descrizione del compito|
 | `/teacher/valuta-compiti` | Il docente può **valutare compiti aperti** per i quali è stata inviata almeno una risposta. Il voto è un intero tra 0 e 30. Dopo la valutazione, il compito diventa “chiuso” e non è più modificabile.                                                              |
 | `/teacher/stato-classe`   | Il docente visualizza **statistiche sui propri studenti**: compiti aperti/chiusi, media dei voti. I dati sono ordinabili per nome, media o numero totale di compiti.                                                                                                |
 | `/student`                | Pagina informativa con le regole di utilizzo dell’account per gli studenti.                                                                                                                                                                                         |
 | `/student/compiti`        | Mostra agli studenti i **compiti aperti** a cui partecipano. Possono inviare o modificare una risposta finché il compito non è valutato.                                                                                                                            |
 | `/student/punteggi`       | Lo studente può vedere i **punteggi ricevuti** e una **media ponderata** dei voti. Il peso di ciascun voto è inversamente proporzionale al numero di membri del gruppo.                                                                                             |
+| `*`                        | Pagina di errore **404 - Not Found**. Mostrata quando l’utente visita una route non esistente. Se l’utente è autenticato, viene offerto un pulsante per tornare alla sua **home personale** (studente o docente).                                           |
+
 
 
 
@@ -106,7 +108,7 @@
   Restituisce la lista dei compiti **aperti** a cui partecipa lo studente autenticato.
 
 - **Request body**:  
-  _Nessun contenuto richiesto._
+  _none_
 
 - **Response**:
   - **Status code**: `200 OK`
@@ -459,7 +461,7 @@ Rappresenta l’associazione molti-a-molti tra compiti e studenti.
 
 ## Main React Components
 
-- `CompitoCard` (in `Student/CompitoCard.jsx`): 
+- `CompitoCard` (in `components/Student/CompitoCard.jsx`): 
   Rappresenta un singolo compito assegnato allo studente, mostrando la domanda e se il compito è ancora aperto, viene mostrato un campo per inserire o modificare la risposta
    - Visualizza una singola domanda di compito assegnato allo studente
    - Mostra la risposta esistente(se presente) oppure un campo per scriverla o modificarla, se il compito è ancora paerto
@@ -467,40 +469,82 @@ Rappresenta l’associazione molti-a-molti tra compiti e studenti.
    - Permette l'invio della risposta tramite il bottone, usando la callback onInvio
    - Quando il compito viene chiuso, il contenuto diventa read-only
 
-- `CompitoDaValutare` (in `Teacher/CompitoDaValutare.jsx`):
+- `CompitoDaValutare` (in `components/Teacher/CompitoDaValutare.jsx`):
   Visualizza un compito creato dal docente, con relativa domanda e risposta degli studenti. Se il compito è ancora aperto, permette di inserire ed inviare una valutazione.
    - Visualizzare la domanda e la risposta di un compito assegnato 
    - Mostrare un campo di valutazione numerica(0-30) se il compito è aperto e la risposta è presente
    - Comunicare al genitore il punteggio inserito tramite la callback onChangeValutazione
    - Permette l'invio della valutazione tramite la callback onValuta, associata al bottone "valuta"
    - Mostrare un punteggio assegnato se il compito è stato già valutato
-- `CompitoForm` (in `Teacher/CompitoForm.jsx`): 
+- `CompitoForm` (in `components/Teacher/CompitoForm.jsx`): 
   Fornisce il modulo per la creazione di un nuovo compito da parte del docente
    - Mostra gli studenti selezionati sotto forma di badge
    - Comunica al genitore eventuali modifiche alla domanda tramite la callback onDomandaChange
    - Gestisce l'invio del form tramite la callback onSubmit
    - Visualizza messaggi di errore/successo
-- `SelezioneStudenti` (in `Teacher/ SelezionaStudenti.jsx`):
+- `SelezioneStudenti` (in `components/Teacher/ SelezionaStudenti.jsx`):
   Permette di selezionare un gruppo di studenti da una lista
    - Evidenzia graficamente gli studenti selezionati
    - Gestisce la selezione/deselezione tramite callback(onToggle) senza mantere stato interno
-- `AppNavbar` (in `common/AppNavbar.jsx`)
+- `AppNavbar` (in `components/common/AppNavbar.jsx`)
   Visualizza la barra di navigazione principale dell’applicazione, adattando il menu in base al ruolo dell’utente (studente o docente) e mostrando il nome utente con opzione di logout
    - Fornisce una navigazione coerente in base all'utente autenticato
    - Visualizza il nome dell'utente loggato
    - Offre un bottone per il logout
-- `Login` (in `Login.jsx`):
+- `Login` (in `components/Login.jsx`):
   Gestisce il modulo di autenticazione iniziale per studenti e docenti, permettendo di inserire le credenziali di accesso(email e password)
    - Visualizza il campo form con campo email e password
    - Alla pressione del bottone "Accedi" invoca onLogin(email,password)
    - Mostra un eventuale messaggio di errore
-- `SchoolManager` (in `SchoolManager.jsx`):
+- `SchoolManager` (in `components/SchoolManager.jsx`):
   Gestisce l'intera logica dell'applicazione dopo l'avvio, coordinando autenticazione, routing, layout e navigazione protetta per docenti e studenti.
   - Esegue un controllo iniziale di autenticazione e ripristina la sessione
   - Imposta le route protette per studenti e docenti
   - Redirect automatico in base al ruolo
   - Layout condiviso con Navbar(defaultLayout)
   - Pagina iniziale HomePage e pagina di errore PageNotFound
+
+- `CompitiAssegnati` (in `pages/Student/CompitiAssegnati.jsx`):
+  Pagina principale per lo studente, mostra l'elenco dei compiti aperti assegnati.  
+  - Recupera l'elenco dei compiti da un'API e gestisce il relativo stato.  
+  - Mostra messaggi di errore/successo.  
+  - Permette allo studente di scrivere, modificare e inviare la risposta.  
+  - Mostra una lista di `CompitoCard`, una per ogni compito aperto.
+- `PunteggiStudent` (in `pages/Student/PunteggiStudent.jsx`):
+  Pagina per visualizzare i punteggi ricevuti dallo studente e la media ponderata finale.   
+  - Recupera da API l’elenco dei compiti chiusi con i relativi punteggi.  
+  - Mostra ogni compito valutato con la domanda e il punteggio ricevuto.  
+  - Calcola e visualizza la media ponderata dei punteggi.  
+  - Gestisce errori nel caricamento e fornisce un pulsante per aggiornare i dati.
+- `NuovoCompito` (in `pages/Teacher/NuovoCompito.jsx`):  
+  Pagina dedicata ai docenti per creare un nuovo compito.   
+  - Recupera l’elenco completo degli studenti dal backend.  
+  - Gestisce la selezione dinamica di un gruppo (tra 2 e 6 studenti) evitando gruppi non validi.  
+  - Mostra messaggi di errore/successo e invia il nuovo compito alle API.  
+  - Integra i componenti `CompitoForm` e `SelezionaStudenti`.
+- `StatoClasse` (in `pages/Teacher/StatoClasse.jsx`)  
+  Pagina per il docente che mostra lo stato complessivo della classe in termini di compiti e punteggi.  
+  - Recupera i dati aggregati degli studenti (compiti aperti, chiusi, media) tramite API.  
+  - Mostra una tabella interattiva ordinabile per nome, numero totale di compiti o media voti.  
+  - Gestisce errori di caricamento e offre un pulsante di aggiornamento.
+- `ValutaCompito` (in `pages/Teacher/ValutaCompito.jsx`)  
+  Pagina per il docente per valutare i compiti creati.  
+  - Recupera l’elenco dei compiti creati dal docente.  
+  - Mostra ogni compito con eventuale risposta fornita dal gruppo.  
+  - Permette di inserire una valutazione (0–30) e inviarla tramite API.  
+  - Mostra messaggi di errore e conferma; aggiorna lo stato del compito a “chiuso”.
+- `HomePage` (in `pages/Home.jsx`)  
+  Pagina iniziale dell’applicazione, visibile solo se l’utente non è autenticato.  
+  - Mostra informazioni sulle funzionalità della piattaforma.  
+  - Include il modulo di login per accedere come studente o docente.  
+  - Una volta autenticato, l’utente viene reindirizzato alla propria area personale.
+- `PageNotFound` (in `pages/PageNotFound.jsx`)  
+  Pagina di errore mostrata quando l’utente visita una route non valida.  
+  - Recupera il ruolo dell’utente autenticato, se presente.  
+  - Visualizza un messaggio “404 – Pagina non trovata”.  
+  - Mostra un pulsante per tornare alla home corretta in base al ruolo (student o teacher).
+
+
 ## Screenshot
 
   `Crea Compito`
@@ -541,4 +585,10 @@ Rappresenta l’associazione molti-a-molti tra compiti e studenti.
     - email: sandro@exam.com
     - password: p456
     - role: student
+  
+- Contenuto iniziale del database:
+  
+  Docente "mario@exam.com" ha chiesto a luca, gabriele e riccardo "Chi ha scoperto l'America?" Valutato
+
+  Docente "mario@exam.com" ha chiesto a giulia, beatrice e benedetta "Quanto fa 2+2?" Non valutato
 

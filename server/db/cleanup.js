@@ -1,6 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
 
-// Sostituisci 'database.sqlite' con il percorso corretto del tuo DB
 const db = new sqlite3.Database('./db/database.db', (err) => {
   if (err) {
     return console.error('Errore di connessione:', err.message);

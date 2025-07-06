@@ -32,6 +32,10 @@ export default function teacherRoutes({ isTeacher }) {
       return res.status(400).json({ error: 'Formato dati non valido' });
     }
 
+    if (studentIds.length < 2 || studentIds.length > 6) {
+    return res.status(400).json({ error: 'Un gruppo deve avere da 2 a 6 studenti.' });
+    }
+
     try {
       const valido = await checkGroupValidity(studentIds, req.user.id);
       res.json({ valido });
@@ -55,7 +59,6 @@ export default function teacherRoutes({ isTeacher }) {
       const tasks = await getTasksByTeacher(teacherID);
       res.json(tasks);
     } catch (err) {
-     // console.error('Errore recupero compiti docente:', err);
       res.status(500).json({ error: 'Errore durante il recupero dei compiti' });
     }
   });
