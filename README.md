@@ -10,7 +10,7 @@
 | `/teacher`                | Pagina riservata ai docenti. Visualizza le regole di utilizzo del proprio account.                                                                                                                                                                                  |
 | `/teacher/nuovo-compito`  | Permette al docente di **assegnare un nuovo compito** a un gruppo di studenti. Include un menù a tendina per la selezione e un form per la descrizione del compito|
 | `/teacher/valuta-compiti` | Il docente può **valutare compiti aperti** per i quali è stata inviata almeno una risposta. Il voto è un intero tra 0 e 30. Dopo la valutazione, il compito diventa “chiuso” e non è più modificabile.                                                              |
-| `/teacher/stato-classe`   | Il docente visualizza **statistiche sui propri studenti**: compiti aperti/chiusi, media dei voti. I dati sono ordinabili per nome, media o numero totale di compiti.                                                                                                |
+| `/teacher/stato-classe`   | Il docente visualizza **statistiche sui propri studenti**: compiti aperti/chiusi, media ponderata dei voti. I dati sono ordinabili per nome, media o numero totale di compiti.                                                                                                |
 | `/student`                | Pagina informativa con le regole di utilizzo dell’account per gli studenti.                                                                                                                                                                                         |
 | `/student/compiti`        | Mostra agli studenti i **compiti aperti** a cui partecipano. Possono inviare o modificare una risposta finché il compito non è valutato.                                                                                                                            |
 | `/student/punteggi`       | Lo studente può vedere i **punteggi ricevuti** e una **media ponderata** dei voti. Il peso di ciascun voto è inversamente proporzionale al numero di membri del gruppo.                                                                                             |
@@ -464,7 +464,7 @@ Rappresenta l’associazione molti-a-molti tra compiti e studenti.
 - `CompitoCard` (in `components/Student/CompitoCard.jsx`): 
   Rappresenta un singolo compito assegnato allo studente, mostrando la domanda e se il compito è ancora aperto, viene mostrato un campo per inserire o modificare la risposta
    - Visualizza una singola domanda di compito assegnato allo studente
-   - Mostra la risposta esistente(se presente) oppure un campo per scriverla o modificarla, se il compito è ancora paerto
+   - Mostra la risposta esistente(se presente) oppure un campo per scriverla o modificarla, se il compito è ancora aperto
    - Comunica eventuali modifiche alla risposta tramite la callback onRispostaChange
    - Permette l'invio della risposta tramite il bottone, usando la callback onInvio
    - Quando il compito viene chiuso, il contenuto diventa read-only
@@ -577,12 +577,16 @@ Rappresenta l’associazione molti-a-molti tra compiti e studenti.
     - email: benedetta@exam.com
     - password: p456
     - role: student
-- User: Tommaso
-    - email: tommaso@exam.com
+- User: Luca
+    - email: luca@exam.com
     - password: p456
     - role: student
-- User: Sandro
-    - email: sandro@exam.com
+- User: Gabriele
+    - email: gabriele@exam.com
+    - password: p456
+    - role: student
+- User: Riccardo
+    - email: riccardo@exam.com
     - password: p456
     - role: student
   
