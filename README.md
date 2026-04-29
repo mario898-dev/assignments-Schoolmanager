@@ -1,6 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/F9jR7G97)
-# Exam #2: "Compiti"
-## Student: s334090 DE PAOLA MARIO
+# Exam: "Compiti"
+## mario898-dev
 
 ## React Client Application Routes
 
@@ -554,45 +554,3 @@ Rappresenta l’associazione molti-a-molti tra compiti e studenti.
 `Stato Classe`
 
 ![Screenshot](./img/statoClasse.png)
-
-## Users Credentials
-
-- User: Mario
-    - email: mario@exam.com
-    - password: p123
-    - role: teacher
-- User: Luigi
-    - email: luigi@exam.com
-    - password: p456
-    - role: teacher
-- User: Giulia
-    - email: giulia@exam.com
-    - password: p456
-    - role: student
-- User: Beatrice
-    - email: beatrice@exam.com
-    - password: p456
-    - role: student
-- User: Benedetta
-    - email: benedetta@exam.com
-    - password: p456
-    - role: student
-- User: Luca
-    - email: luca@exam.com
-    - password: p456
-    - role: student
-- User: Gabriele
-    - email: gabriele@exam.com
-    - password: p456
-    - role: student
-- User: Riccardo
-    - email: riccardo@exam.com
-    - password: p456
-    - role: student
-  
-- Contenuto iniziale del database:
-  
-  Docente "mario@exam.com" ha chiesto a luca, gabriele e riccardo "Chi ha scoperto l'America?" Valutato
-
-  Docente "mario@exam.com" ha chiesto a giulia, beatrice e benedetta "Quanto fa 2+2?" Non valutato
-
